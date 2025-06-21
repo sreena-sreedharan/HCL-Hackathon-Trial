@@ -1,0 +1,13 @@
+{
+  "name": "patient-service",
+  "version": "1.0.0",
+  "description": "Patient microservice for AWS Lambda using Express",
+  "main": "patient-service.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "aws-serverless-express": "^3.4.0",
+    "express": "^4.18.2"
+  }
+}

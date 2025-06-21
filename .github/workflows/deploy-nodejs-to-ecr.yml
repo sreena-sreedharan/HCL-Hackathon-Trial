@@ -1,0 +1,42 @@
+name: Build & deploy on ECR - NodeJs
+
+on:
+  #workflow_dispatch: 
+  push:
+    branches: [main]
+    
+env:
+  AWS_REGION: ${{ secrets.AWS_REGION }}
+  ECR_ACCOUNT_URL: ${{ secrets.ECR_ACCOUNT_URL }}
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: ${{ env.AWS_REGION }}
+
+    - name: Login to Amazon ECR
+      run: |
+        aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $ECR_ACCOUNT_URL
+
+    - name: Build and push Patient Service image
+      run: |
+        IMAGE_TAG=latest
+        IMAGE_URI=$ECR_ACCOUNT_URL/patient-service-sreena:$IMAGE_TAG
+        docker build -t $IMAGE_URI ./patient-service
+        docker push $IMAGE_URI
+    - name: Build and push Appointment Service image
+      run: |
+        IMAGE_TAG=latest
+        IMAGE_URI=$ECR_ACCOUNT_URL/appointment-service-sreena:$IMAGE_TAG
+        docker build -t $IMAGE_URI ./appointment-service
+        docker push $IMAGE_URI
