@@ -11,5 +11,6 @@ RUN npm install
 # Copy the rest of the application files
 COPY . .
 
+
 # Set the Lambda handler file and export
 CMD ["appointment-service.handler"]
